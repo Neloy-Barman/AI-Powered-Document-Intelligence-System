@@ -8,6 +8,16 @@ AI-Powered Document Intelligence System. Scope and deliverables: `docs/Ai Engine
 
 ## Implemented
 
+### Processing (`backend/processing/`)
+
+- `file_detector.py`
+  - `detect_file_type(file_path)` returns the file type as a string (`"pdf"`, `"csv"`, `"spreadsheet"`, `"image"`) based on extension.
+  - Returns `None` and prints `TypeName: message` for missing files or unsupported types.
+
+- `router.py`
+  - `route_file(file_path)` detects the file type via `detect_file_type` and dispatches to the matching parser.
+  - Returns the parser result; on routing failure returns `status`, `file_name`, `error_message`.
+
 ### Parsers (`backend/processing/parsers/`)
 
 - `pdf_parser.py`
@@ -41,7 +51,11 @@ AI-Powered Document Intelligence System. Scope and deliverables: `docs/Ai Engine
 ### Tests (`backend/tests/`)
 
 - `conftest.py` — shared fixtures: `valid_pdf_path`, `missing_pdf_path`, `corrupted_pdf_path`, `no_content_pdf_path`, `valid_csv_path`, `corrupted_csv_path`, `valid_spreadsheet_path`, `corrupted_spreadsheet_path`.
-- `unit/processing/parsers/test_pdf_parser.py` — 3 active pytest cases: success, missing file, no written content. Corrupted test commented out.
+- `unit/processing/test_file_detector.py` — 6 pytest cases: pdf, csv, spreadsheet, image, missing file, unsupported type.
+- `unit/processing/test_router.py` — 6 pytest cases: pdf, csv, spreadsheet, image, missing file, unsupported type.
+- `unit/processing/ocr/test_easyocr_engine.py` — 4 pytest cases: success, no written content, corrupted file, missing file.","oldString">
+- `unit/processing/test_pipeline.py` — 3 pytest cases: all success, with failure, empty input.","path":"D:\AI-Powered-Document-Intelligence-System\docs\progress-tracker.md","oldString">
+- `unit/processing/parsers/test_pdf_parser.py` — 3 active pytest cases: success, missing file, no written content. Corrupted test commented out.","path":"D:\AI-Powered-Document-Intelligence-System\docs\progress-tracker.md
 - `unit/processing/parsers/test_csv_parser.py` — 2 pytest cases: success, corrupted file.
 - `unit/processing/parsers/test_spreadsheet_parser.py` — 2 pytest cases: success, corrupted file.
 - `fixtures/` — `valid.pdf`, `no_content.pdf`, `valid.csv`, `corrupted.csv`, `valid.xlsx` (2 sheets), `corrupted.xlsx`.
@@ -59,9 +73,12 @@ AI-Powered Document Intelligence System. Scope and deliverables: `docs/Ai Engine
 ## Pending
 
 - Scanned PDF to OCR fallback.
-- `file_detector.py` — file type detection.
-- `pipeline.py` — processing orchestration.
-- `router.py` — API endpoints.
+- `pipeline.py`
+  - `process_files(file_paths)` iterates over a list of file paths, routes each via `route_file`.
+  - Skips failed files (counted + printed), keeps successful results with `status` stripped.
+  - Returns `status`, `successful`, `failed`, `results`.","oldString">
+- AI extraction, validation, database/search, frontend, automated tests, evaluation report.","oldString">
+- `pipeline.py` — processing orchestration.","path":"D:\AI-Powered-Document-Intelligence-System\docs\progress-tracker.md","path":"D:\AI-Powered-Document-Intelligence-System\docs\progress-tracker.md
 - AI extraction, validation, database/search, frontend, automated tests, evaluation report.
 
 ## Known Gaps

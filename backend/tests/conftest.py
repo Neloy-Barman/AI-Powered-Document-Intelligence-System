@@ -10,9 +10,9 @@
 # - function when the fixture uses tmp_path or must reset between tests
 # A fixture cannot depend on another fixture with a narrower scope.
 
-from pathlib import Path
-
 import pytest
+from PIL import Image
+from pathlib import Path
 
 TEST_ROOT = Path(__file__).resolve().parent
 
@@ -106,9 +106,6 @@ def missing_image_path(tmp_path: Path) -> Path:
 @pytest.fixture(scope="session")
 def no_content_image_path() -> Path:
     return NO_CONTENT_IMAGE_PATH
-
-
-from PIL import Image
 
 
 @pytest.fixture

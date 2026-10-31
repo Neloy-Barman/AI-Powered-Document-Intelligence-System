@@ -1,3 +1,5 @@
+# Run: pytest backend/tests/unit/processing/parsers/test_spreadsheet_parser.py -v -s
+
 """Tests for the spreadsheet parser's success and failure responses."""
 
 from pathlib import Path

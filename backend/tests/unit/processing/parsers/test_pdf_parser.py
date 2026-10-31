@@ -1,3 +1,5 @@
+# Run: pytest backend/tests/unit/processing/parsers/test_pdf_parser.py -v -s
+
 """Tests for the PDF parser's success and failure responses."""
 
 from pathlib import Path
