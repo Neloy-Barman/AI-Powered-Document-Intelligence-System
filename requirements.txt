@@ -1,0 +1,10 @@
+pymupdf
+
+pandas
+openpyxl 
+xlrd
+
+pytesseract
+pillow
+
+easyocr
