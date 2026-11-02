@@ -8,3 +8,7 @@ pytesseract
 pillow
 
 easyocr
+
+pydantic
+
+google-genai

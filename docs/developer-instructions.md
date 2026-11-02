@@ -7,13 +7,15 @@ These instructions apply to any project unless the user explicitly says otherwis
 - Do exactly what is asked. Nothing more.
 - Do not add extra features, files, refactors, comments, or output that were not requested.
 - If a requirement is ambiguous, ask before implementing.
+- Get the user's approval before starting any new task or change.
 
 ## Code Style
 
 - Write clean, readable, production-quality code.
 - Follow the standard naming conventions of the language (PEP 8 for Python, camelCase/PascalCase for JavaScript/TypeScript, etc.).
 - Use descriptive, meaningful names for variables, functions, classes, and files.
-- Do not add unnecessary comments, docstrings, or annotations. Comment only when the logic is genuinely non-obvious.
+- Add a short, plain-language comment on each line of React/frontend component code so the user (learning React) can follow what it does.
+- Do not add unnecessary comments elsewhere; comment only when the logic is genuinely non-obvious.
 - Keep functions and methods small and focused on a single responsibility.
 - Match the existing structure, patterns, and style of the surrounding codebase.
 
@@ -56,7 +58,13 @@ These instructions apply to any project unless the user explicitly says otherwis
 - Record what was added, where it lives, and what it returns or handles.
 - Keep it short, factual, and free of filler or buzzwords.
 - Include a brief project overview, implemented work, pending work, and known gaps so another agent can continue from the file alone.
+- Maintain `docs/frontend-development-plan.md` for frontend work: check off build-order items, log progress, and revise the requirements table, API contract, or data shapes whenever they change.
 
 ## Maintaining This File
 
 - When the user gives an instruction that is general and not project-specific, append it to this file so it does not need to be repeated.
+
+## Dependencies
+- When a new dependency is added to `requirements.txt` (or any dependency manifest), install it immediately in the project environment (e.g. `pip install -r requirements.txt` or `pip install <package>`).
+- Do not only edit the manifest; keep the environment in sync with it.
+- Report the install result so it is clear the dependency is actually available.

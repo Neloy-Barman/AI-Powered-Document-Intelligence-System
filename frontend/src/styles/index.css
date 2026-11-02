@@ -1,0 +1,132 @@
+/* Off-white page background covering the full screen */
+body {
+  margin: 0;
+  background-color: #f5f5f5;
+}
+
+/* Center all content in the middle of the screen */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.app-title {}
+
+/* Navigation between the Upload and Progress views */
+.app-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.app-nav-button {}
+
+.app-nav-button-active {}
+
+/* One view at a time; both stay mounted so their state is kept */
+.app-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.app-view-hidden {
+  display: none;
+}
+
+/* Stack each form's contents vertically and center them */
+.upload-form,
+.invoice-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-form-title {}
+.upload-form-input {}
+.upload-file-list {}
+.upload-file-item {}
+.upload-submit,
+.invoice-submit {
+  min-width: 140px;
+  padding: 8px 16px;
+}
+
+/* Floating message boxes (documents prompt, invoice success, final summary) */
+.upload-prompt,
+.processing-summary {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 10;
+  padding: 16px;
+  border: 1px solid #000;
+  background-color: #fff;
+  transform: translate(-50%, -50%);
+}
+
+.upload-prompt-message {
+  margin: 0 0 12px;
+}
+
+.upload-prompt-yes {
+  margin-right: 8px;
+}
+
+.upload-prompt-no {}
+
+.invoice-form-title {}
+.invoice-form-input {}
+
+/* Progress view */
+.progress-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-page-title {}
+.progress-empty {}
+
+.progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.progress-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 280px;
+}
+
+.progress-item-name {}
+.progress-item-status {}
+.progress-item-status-queued {}
+.progress-item-status-processing {}
+.progress-item-status-completed {}
+.progress-item-status-failed {}
+
+/* Final summary popup */
+.processing-summary {}
+.processing-summary-message {
+  margin: 0 0 8px;
+}
+
+.processing-summary-counts {
+  margin: 0 0 12px;
+}
+
+.processing-summary-ok {}

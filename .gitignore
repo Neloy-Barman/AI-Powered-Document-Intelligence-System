@@ -222,3 +222,4 @@ __marimo__/
 fixtures/
 files/
 test.py
+node_modules/
