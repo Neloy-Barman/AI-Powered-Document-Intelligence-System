@@ -99,7 +99,15 @@ AI-Powered Document Intelligence System. Scope and deliverables: `docs/Ai Engine
 
 ### API (Task 4) — minimal
 
-- `backend/app/main.py` — FastAPI app; registers `/invoices` router.
+- `backend/app/main.py` — FastAPI app; registers home, invoices, jobs routers.
+- `backend/app/api/routes/home.py` — `GET /` health message.
+- `backend/app/api/routes/invoices.py` — `POST /invoices` saves file, enqueues invoice extraction job, returns `job_id`.
+- `backend/app/api/routes/jobs.py` — `GET /jobs/{job_id}` polls RQ job status/result.
+- `backend/app/services/storage_service.py` — `save_invoice()` validates (pdf/png), saves to `backend/uploads/`.
+- `backend/app/services/invoice_extraction_service.py` — `enqueue_invoice()` enqueues to the `invoices` RQ queue.
+- `backend/app/workers/queues.py` — Redis connection + `invoices` queue.
+- `backend/app/workers/tasks.py` — `process_invoice_job()` RQ entry point.
+- Dependencies added: `fastapi`, `uvicorn`, `python-multipart`, `redis`, `rq` (installed).
 - `backend/app/api/routes/invoices.py` — `POST /invoices` single-file upload.
 - `backend/app/services/storage_service.py` — `save_invoice()` validates extension (pdf/png), saves to `backend/uploads/`, returns status/file_name/message or error_message.
 - `backend/app/core/config.py` — `UPLOAD_DIR`, `ALLOWED_INVOICE_EXTENSIONS`.

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from fastapi import UploadFile
 
-from backend.app.core.config import ALLOWED_INVOICE_EXTENSIONS, UPLOAD_DIR
+from backend.app.core.config import ALLOWED_INVOICE_EXTENSIONS, INVOICE_UPLOAD_DIR
 
 
 def save_invoice(file: UploadFile | None) -> dict[str, str | bool | None]:
@@ -27,8 +27,8 @@ def save_invoice(file: UploadFile | None) -> dict[str, str | bool | None]:
 
     try:
         # Create the uploads directory if it does not exist yet.
-        UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-        destination = UPLOAD_DIR / file_name
+        INVOICE_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+        destination = INVOICE_UPLOAD_DIR / file_name
         # Stream the uploaded file to disk.
         with destination.open("wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
