@@ -97,6 +97,14 @@ AI-Powered Document Intelligence System. Scope and deliverables: `docs/Ai Engine
 - `validation-plan.md` — Task 3 validation rules, issue structure, statuses, tests, known gaps, and implementation checklist.
 - `database-schema.md` — draft invoices table schema.
 
+### API (Task 4) — minimal
+
+- `backend/app/main.py` — FastAPI app; registers `/invoices` router.
+- `backend/app/api/routes/invoices.py` — `POST /invoices` single-file upload.
+- `backend/app/services/storage_service.py` — `save_invoice()` validates extension (pdf/png), saves to `backend/uploads/`, returns status/file_name/message or error_message.
+- `backend/app/core/config.py` — `UPLOAD_DIR`, `ALLOWED_INVOICE_EXTENSIONS`.
+- Dependencies added: `fastapi`, `uvicorn`, `python-multipart` (installed).
+
 ### Scratch
 
 - `test.py` — dependency spikes: PyMuPDF page iteration, pandas multi-sheet read, pytesseract TIFF OCR.
