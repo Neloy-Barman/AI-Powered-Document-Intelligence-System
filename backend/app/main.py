@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from backend.app.core.config import UPLOAD_DIR
-from backend.app.api.routes import extraction, home, invoices, jobs, search
+from backend.app.api.routes import documents, extraction, home, invoices, jobs, search
 
 app = FastAPI(
     title="AI-Powered Document Intelligence System",
@@ -29,6 +29,7 @@ app.add_middleware(
 
 app.include_router(home.router)
 app.include_router(invoices.router)
+app.include_router(documents.router)
 app.include_router(extraction.router)
 app.include_router(jobs.router)
 app.include_router(search.router)

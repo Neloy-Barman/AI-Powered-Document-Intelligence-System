@@ -1,5 +1,5 @@
 import { useState } from "react"; // useState lets the component remember data that changes
-import { uploadInvoice, triggerExtraction } from "../../lib/apiClient"; // real upload + extraction trigger
+import { uploadInvoice, uploadDocuments, triggerExtraction, processDocuments } from "../../lib/apiClient"; // real upload + extraction trigger
 
 // UploadForm holds the documents uploader and the invoice uploader
 // onProcess(files, kind) starts processing and moves to the progress screen
@@ -9,6 +9,8 @@ function UploadForm({ onProcess, isProcessing }) {
   const [selectedFiles, setSelectedFiles] = useState([]);
   // documentsLocked = true after the user answers "No" to uploading more documents
   const [documentsLocked, setDocumentsLocked] = useState(false);
+  // showDocumentsUploaded = true while the document success box is visible
+  const [showDocumentsUploaded, setShowDocumentsUploaded] = useState(false);
   // showUploadMorePrompt = true while the Yes/No popup is visible
   const [showUploadMorePrompt, setShowUploadMorePrompt] = useState(false);
 
@@ -22,7 +24,7 @@ function UploadForm({ onProcess, isProcessing }) {
   }
 
   // handleDocumentsSubmit runs when the documents Submit button is clicked
-  function handleDocumentsSubmit(event) {
+  async function handleDocumentsSubmit(event) {
     event.preventDefault(); // Stop the browser from reloading the page
 
     // Do nothing when no documents are selected
@@ -30,12 +32,40 @@ function UploadForm({ onProcess, isProcessing }) {
       return;
     }
 
-    // If the section is locked, the button now says "Process"
+    // If the section is locked, process the uploaded documents
     if (documentsLocked) {
-      onProcess(selectedFiles, "document"); // send this batch to the queue
-      setSelectedFiles([]); // reset: remove the stored file names
-      setDocumentsLocked(false); // reset: unlock the uploader again
+      try {
+        const result = await processDocuments(); // ask backend to process pending documents
+        if (result.status === "queued" && Array.isArray(result.jobs) && result.jobs.length > 0) {
+          const items = result.jobs.map((job) => ({
+            name: job.file_name,
+            job_id: job.job_id,
+          }));
+          onProcess(items, "document"); // hand off to the shared queue
+        } else if (result.status === "empty") {
+          window.alert(result.message || "No pending documents to process.");
+        } else if (result.status === "busy") {
+          window.alert(result.message || "A file is already processing.");
+        }
+        setSelectedFiles([]); // reset selected files
+        setDocumentsLocked(false); // unlock the uploader again
+      } catch (error) {
+        window.alert(error.message); // show backend error
+      }
       return; // stop here, nothing else to do
+    }
+
+    // Upload the selected documents before asking whether to upload more
+    try {
+      const result = await uploadDocuments(selectedFiles); // real upload to the backend
+      if (result.failed && result.failed.length > 0) {
+        window.alert(
+          result.failed.map((item) => `${item.file_name}: ${item.error}`).join("\n")
+        );
+      }
+    } catch (error) {
+      window.alert(error.message); // show backend error
+      return;
     }
 
     setShowUploadMorePrompt(true); // open the Yes/No popup
@@ -157,14 +187,58 @@ function UploadForm({ onProcess, isProcessing }) {
   return (
     // <> ... </> groups the two forms without adding an extra HTML element
     <>
-      {/* ---------- Documents form (disabled for now) ----------
+      {/* ---------- Documents form ---------- */}
       <form
         className="upload-form"
         onSubmit={handleDocumentsSubmit} // Run the documents submit logic
       >
-        ...documents uploader commented out...
+        {/* Section heading for the document upload */}
+        <h2 className="upload-form-title">Upload Documents</h2>
+        {/* Hide the picker once files are ready to upload */}
+        {!documentsLocked && (
+          <input
+            className="upload-form-input" // CSS class for styling later
+            type="file" // Tells the browser this input opens a file picker
+            multiple // Allow more than one file
+            accept=".pdf,.jpg,.png,.tiff,.xlsx,.xls,.csv" // Allowed document types
+            onChange={handleFileChange} // Combine selected files
+          />
+        )}
+        {/* Show the selected file names */}
+        {selectedFiles.length > 0 && (
+          <ul className="upload-file-list">
+            {selectedFiles.map((file, index) => (
+              <li className="upload-file-item" key={`${file.name}-${index}`}>
+                {file.name}
+              </li>
+            ))}
+          </ul>
+        )}
+        {/* Button label: "Submit" normally, "Process" after locking */}
+        <button className="upload-submit" type="submit">
+          {documentsLocked ? "Process" : "Submit"}
+        </button>
+        {/* Yes/No popup asking whether to upload more documents */}
+        {showUploadMorePrompt && (
+          <div className="upload-prompt">
+            <p className="upload-prompt-message">Upload more documents?</p>
+            <button
+              className="upload-prompt-yes"
+              type="button"
+              onClick={handleUploadMoreYes}
+            >
+              Yes
+            </button>
+            <button
+              className="upload-prompt-no"
+              type="button"
+              onClick={handleUploadMoreNo}
+            >
+              No
+            </button>
+          </div>
+        )}
       </form>
-      */}
       {/* ---------- Invoice form ---------- */}
       <form
         className="invoice-form"

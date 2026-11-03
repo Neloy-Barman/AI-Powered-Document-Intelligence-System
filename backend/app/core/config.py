@@ -8,8 +8,20 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 UPLOAD_DIR = BASE_DIR / "uploads"
 # Invoices are stored in a dedicated subfolder.
 INVOICE_UPLOAD_DIR = UPLOAD_DIR / "invoices"
+# Documents are stored in a dedicated subfolder.
+DOCUMENT_UPLOAD_DIR = UPLOAD_DIR / "documents"
 # Extensions accepted for invoice uploads only.
 ALLOWED_INVOICE_EXTENSIONS = {".pdf", ".png"}
+# Extensions accepted for document uploads.
+ALLOWED_DOCUMENT_EXTENSIONS = {
+    ".pdf",
+    ".jpg",
+    ".png",
+    ".tiff",
+    ".xlsx",
+    ".xls",
+    ".csv",
+}
 
 # Qdrant vector database
 QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")

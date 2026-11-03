@@ -15,9 +15,9 @@ def get_redis() -> Redis:
     )
 
 
-def get_invoice_queue() -> Queue:
-    """Return the dedicated queue used only for invoice processing jobs."""
+def get_processing_queue() -> Queue:
+    """Return the shared queue used for invoice and document processing jobs."""
     return Queue(
-        "invoices",
+        "processing",
         connection=get_redis(),
     )

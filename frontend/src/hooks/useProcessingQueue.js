@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"; // useEffect runs side effects; useState stores changing data
 import { processFile } from "../lib/processingService"; // The mock processing call (documents)
-import { streamJobStatus } from "../lib/apiClient"; // SSE stream for invoice jobs
+import { streamJobStatus, triggerExtraction, processDocuments } from "../lib/apiClient"; // SSE stream and backend triggers
 
 // useProcessingQueue owns the shared queue and processes one file at a time
 export function useProcessingQueue() {
@@ -16,11 +16,6 @@ export function useProcessingQueue() {
   function enqueue(files, kind) {
     if (files.length === 0) {
       return; // nothing to add
-    }
-
-    // Documents are disabled for now; only invoices are processed.
-    if (kind === "document") {
-      return; // skip document items
     }
 
     // Build one queue item per file
@@ -77,6 +72,43 @@ export function useProcessingQueue() {
     });
   }
 
+  // scheduleNextPending tries to trigger any pending backend jobs
+  async function scheduleNextPending(attempt = 0) {
+    if (attempt >= 5) {
+      return; // stop retrying after a few attempts
+    }
+
+    try {
+      const invoiceResult = await triggerExtraction();
+      if (invoiceResult.status === "queued" && Array.isArray(invoiceResult.jobs) && invoiceResult.jobs.length > 0) {
+        const newItems = invoiceResult.jobs.map((job) => ({
+          name: job.file_name,
+          job_id: job.job_id,
+          kind: "invoice",
+        }));
+        enqueue(newItems, "invoice");
+        return;
+      }
+
+      const documentResult = await processDocuments();
+      if (documentResult.status === "queued" && Array.isArray(documentResult.jobs) && documentResult.jobs.length > 0) {
+        const newItems = documentResult.jobs.map((job) => ({
+          name: job.file_name,
+          job_id: job.job_id,
+          kind: "document",
+        }));
+        enqueue(newItems, "document");
+        return;
+      }
+
+      if (invoiceResult.status === "busy" || documentResult.status === "busy") {
+        setTimeout(() => scheduleNextPending(attempt + 1), 1000);
+      }
+    } catch (error) {
+      setTimeout(() => scheduleNextPending(attempt + 1), 1000);
+    }
+  }
+
   // Effect 1: if nothing is processing, promote the oldest queued file
   useEffect(() => {
     setState((current) => {
@@ -116,8 +148,8 @@ export function useProcessingQueue() {
     let cancelled = false; // ignore a result if this effect is cleaned up
     let source = null; // SSE source handle
 
-    if (processingItem.kind === "invoice" && processingItem.job_id) {
-      // Real-time status via SSE
+    if (processingItem.job_id) {
+      // Real-time status via SSE for both invoice and document jobs
       source = streamJobStatus(processingItem.job_id, (data) => {
         if (cancelled) return;
         if (data.status === "started") {
@@ -125,13 +157,15 @@ export function useProcessingQueue() {
         }
         if (data.status === "finished") {
           finishItem(processingItem.id, "completed", null, data.result);
+          scheduleNextPending();
         }
         if (data.status === "failed") {
-          finishItem(processingItem.id, "failed", data.error || "Extraction failed", null);
+          finishItem(processingItem.id, "failed", data.error || "Processing failed", null);
+          scheduleNextPending();
         }
       });
     } else {
-      // Mock processing (documents, kept for later)
+      // Mock processing (kept for later)
       processFile(processingItem)
         .then(() => {
           if (!cancelled) {
