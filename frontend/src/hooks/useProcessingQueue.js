@@ -156,7 +156,12 @@ export function useProcessingQueue() {
           // already processing; nothing to change
         }
         if (data.status === "finished") {
-          finishItem(processingItem.id, "completed", null, data.result);
+          const result = data.result;
+          if (result && result.status === "failed") {
+            finishItem(processingItem.id, "failed", result.error || "Processing failed", result);
+          } else {
+            finishItem(processingItem.id, "completed", null, result);
+          }
           scheduleNextPending();
         }
         if (data.status === "failed") {

@@ -16,6 +16,8 @@ from backend.app.core.config import (
     QDRANT_COLLECTION_NAME,
     QDRANT_SEARCH_LIMIT,
     QDRANT_URL,
+    SEMANTIC_SEARCH_WEIGHT,
+    KEYWORD_SEARCH_WEIGHT,
 )
 from backend.app.search.embeddings import EmbeddingModel, create_embedding_model
 
@@ -149,6 +151,24 @@ class QdrantVectorService:
             }
             for point in response.points
         ]
+
+    def hybrid_search(
+        self,
+        query: str,
+        limit: int | None = None,
+        semantic_weight: float = SEMANTIC_SEARCH_WEIGHT,
+        keyword_weight: float = KEYWORD_SEARCH_WEIGHT,
+    ) -> list[dict[str, Any]]:
+        """Run LangChain-based hybrid search using Qdrant + BM25."""
+        from backend.app.search.langchain_hybrid_search import LangChainHybridSearch
+
+        hybrid = LangChainHybridSearch(
+            service=self,
+            semantic_weight=semantic_weight,
+            keyword_weight=keyword_weight,
+            limit=limit or self.search_limit,
+        )
+        return hybrid.search(query=query, limit=limit)
 
 
 def create_qdrant_service() -> QdrantVectorService:

@@ -1,7 +1,7 @@
 # Run (from project root, venv activated):
 #   1) Redis: docker start redis   (or docker run -d --name redis -p 6379:6379 redis:7-alpine)
 #   2) API:   uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
-#   3) Worker (Windows uses SimpleWorker, no fork): rq worker invoices --worker-class rq.worker.SimpleWorker
+#   3) Worker (Windows uses SimpleWorker, no fork): rq worker processing --worker-class rq.worker.SimpleWorker
 #   4) Frontend (from project root): cd frontend && npm run dev   (opens http://localhost:5173)
 
 from fastapi import FastAPI

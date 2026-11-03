@@ -20,3 +20,7 @@ python-multipart
 redis
 rq
 qdrant-client
+langchain
+langchain-core
+langchain-community
+rank-bm25

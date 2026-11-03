@@ -31,6 +31,12 @@ QDRANT_API_KEY = os.getenv("QDRANT_API_KEY") or None
 QDRANT_COLLECTION_NAME = "document-intelligence-system"
 QDRANT_SEARCH_LIMIT = 3
 
+# Semantic search
+SEMANTIC_SEARCH_WEIGHT = 0.7
+KEYWORD_SEARCH_WEIGHT = 0.3
+HYBRID_SEARCH_LIMIT = 5
+BM25_CORPUS_PATH = BASE_DIR / "data" / "bm25_corpus.json"
+
 # Local embedding model for testing
 EMBEDDING_MODEL = "paraphrase-multilingual-MiniLM-L12-v2"
 EMBEDDING_DEVICE = "cpu"
