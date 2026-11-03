@@ -9,11 +9,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from backend.app.core.config import UPLOAD_DIR
+from backend.app.db.init_db import ensure_tables
 from backend.app.api.routes import documents, extraction, home, invoices, jobs, search
 
 app = FastAPI(
     title="AI-Powered Document Intelligence System",
 )
+
+
+@app.on_event("startup")
+def initialize_database() -> None:
+    ensure_tables()
 
 # Allow the Vite dev server (frontend) to call the API.
 app.add_middleware(

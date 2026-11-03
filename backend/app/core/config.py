@@ -31,6 +31,9 @@ QDRANT_API_KEY = os.getenv("QDRANT_API_KEY") or None
 QDRANT_COLLECTION_NAME = "document-intelligence-system"
 QDRANT_SEARCH_LIMIT = 3
 
+# PostgreSQL database
+DATABASE_URL = os.getenv("DATABASE_URL")
+
 # Semantic search
 SEMANTIC_SEARCH_WEIGHT = 0.7
 KEYWORD_SEARCH_WEIGHT = 0.3

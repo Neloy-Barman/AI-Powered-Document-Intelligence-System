@@ -1,4 +1,5 @@
 import json
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -40,6 +41,11 @@ def append_chunks(
         entry for entry in corpus
         if entry.get("file_name") not in new_file_names
     ]
+
+    for chunk in chunks:
+        chunk.setdefault("id", chunk.get("bm25_entry_id") or str(uuid4()))
+        chunk.setdefault("bm25_entry_id", chunk["id"])
+
     corpus.extend(chunks)
 
     save_corpus(corpus, path)

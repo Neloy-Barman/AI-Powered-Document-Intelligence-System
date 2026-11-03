@@ -20,6 +20,7 @@ python-multipart
 redis
 rq
 qdrant-client
+psycopg2-binary
 langchain
 langchain-core
 langchain-community
