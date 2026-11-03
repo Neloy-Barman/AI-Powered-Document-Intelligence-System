@@ -1,3 +1,5 @@
+import { useState } from "react"; // useState lets us toggle the result view
+
 // STATUS_LABELS maps the stored status to the text shown on screen
 const STATUS_LABELS = {
   queued: "Queued", // waiting for its turn
@@ -8,6 +10,9 @@ const STATUS_LABELS = {
 
 // ProgressPage shows every file in the shared queue
 function ProgressPage({ items }) {
+  // expandedId holds the id of the row whose result is currently shown
+  const [expandedId, setExpandedId] = useState(null);
+
   return (
     <section className="progress-page">
       {/* Screen heading */}
@@ -31,6 +36,24 @@ function ProgressPage({ items }) {
               >
                 {STATUS_LABELS[item.status]}
               </span>
+              {/* Show a "View result" button only for completed items with a result */}
+              {item.status === "completed" && item.result && (
+                <button
+                  className="progress-view-result"
+                  type="button"
+                  onClick={() =>
+                    setExpandedId(expandedId === item.id ? null : item.id)
+                  } // toggle the inline result view
+                >
+                  {expandedId === item.id ? "Hide result" : "View result"}
+                </button>
+              )}
+              {/* Inline result view when expanded */}
+              {expandedId === item.id && item.result && (
+                <pre className="progress-result">
+                  {JSON.stringify(item.result, null, 2)}
+                </pre>
+              )}
             </li>
           ))}
         </ul>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"; // useEffect runs side effects; useState stores changing data
-import { processFile } from "../lib/processingService"; // The mock processing call
+import { processFile } from "../lib/processingService"; // The mock processing call (documents)
+import { streamJobStatus } from "../lib/apiClient"; // SSE stream for invoice jobs
 
 // useProcessingQueue owns the shared queue and processes one file at a time
 export function useProcessingQueue() {
@@ -17,16 +18,22 @@ export function useProcessingQueue() {
       return; // nothing to add
     }
 
-    // Build one queue item per File object
+    // Documents are disabled for now; only invoices are processed.
+    if (kind === "document") {
+      return; // skip document items
+    }
+
+    // Build one queue item per file
     const newItems = files.map((file, index) => ({
       id: crypto.randomUUID(), // unique key for React and for updates
       file_name: file.name, // shown in the progress list
-      kind, // "document" or "invoice" (useful for the backend later)
-      file, // keep the File object for the real upload later
+      kind, // "invoice" (documents disabled)
+      job_id: file.job_id || null, // backend job id for invoices
+      file, // keep the reference for later
       status: "queued", // new files wait their turn
       error: null, // filled in if processing fails
-      // Static test rule: the first file of a multi-file batch always fails
-      should_fail: files.length > 1 && index === 0,
+      result: null, // filled in when extraction finishes
+      should_fail: false, // invoices use real backend status
     }));
 
     setState((current) => {
@@ -45,11 +52,11 @@ export function useProcessingQueue() {
   }
 
   // finishItem records the result of the file that just finished
-  function finishItem(id, status, errorMessage) {
+  function finishItem(id, status, errorMessage, result) {
     setState((current) => {
       // Replace only the finished item, keeping the others untouched
       const items = current.items.map((item) =>
-        item.id === id ? { ...item, status, error: errorMessage ?? null } : item
+        item.id === id ? { ...item, status, error: errorMessage ?? null, result: result ?? null } : item
       );
 
       // Add this result to the current run's counts
@@ -100,28 +107,49 @@ export function useProcessingQueue() {
   // Find the file that is currently being processed
   const processingItem = state.items.find((item) => item.status === "processing");
 
-  // Effect 2: call the processing service for the current file
+  // Effect 2: process the current file (SSE for invoices, mock for others)
   useEffect(() => {
     if (!processingItem) {
       return; // nothing to process
     }
 
     let cancelled = false; // ignore a result if this effect is cleaned up
+    let source = null; // SSE source handle
 
-    processFile(processingItem)
-      .then(() => {
-        if (!cancelled) {
-          finishItem(processingItem.id, "completed", null); // success result
+    if (processingItem.kind === "invoice" && processingItem.job_id) {
+      // Real-time status via SSE
+      source = streamJobStatus(processingItem.job_id, (data) => {
+        if (cancelled) return;
+        if (data.status === "started") {
+          // already processing; nothing to change
         }
-      })
-      .catch((error) => {
-        if (!cancelled) {
-          finishItem(processingItem.id, "failed", error.message); // failure result
+        if (data.status === "finished") {
+          finishItem(processingItem.id, "completed", null, data.result);
+        }
+        if (data.status === "failed") {
+          finishItem(processingItem.id, "failed", data.error || "Extraction failed", null);
         }
       });
+    } else {
+      // Mock processing (documents, kept for later)
+      processFile(processingItem)
+        .then(() => {
+          if (!cancelled) {
+            finishItem(processingItem.id, "completed", null, null);
+          }
+        })
+        .catch((error) => {
+          if (!cancelled) {
+            finishItem(processingItem.id, "failed", error.message, null);
+          }
+        });
+    }
 
     return () => {
       cancelled = true; // stop listening to this run
+      if (source) {
+        source.close(); // close SSE connection
+      }
     };
   }, [processingItem?.id]); // restart only when a different file starts
 

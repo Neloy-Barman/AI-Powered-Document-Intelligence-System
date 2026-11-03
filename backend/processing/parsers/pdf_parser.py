@@ -39,3 +39,17 @@ def parse_pdf(file_path: str | Path) -> dict[str, str | int | list[str]]:
             "file_name": path.name,
             "error_message": error_message,
         }
+
+
+if __name__ == "__main__":
+    file_path = (
+        "D:\AI-Powered-Document-Intelligence-System\docs\Ai Engineer Task 1.3.pdf"
+    )
+
+    result = parse_pdf(
+        file_path=file_path,
+    )
+    print(result)
+
+
+# python -m backend.processing.parsers.pdf_parser

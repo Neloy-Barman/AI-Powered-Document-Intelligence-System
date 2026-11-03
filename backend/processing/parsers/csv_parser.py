@@ -39,3 +39,30 @@ def parse_csv(file_path: str | Path) -> dict[str, str | int | list[dict[str, str
             "file_name": path.name,
             "error_message": error_message,
         }
+
+
+if __name__ == "__main__":
+    import json
+    import sys
+
+    from backend.processing.chunking.csv_chunker import chunk_csv
+
+    # Default to the test fixture, but allow a custom path:
+    # python -m backend.processing.parsers.csv_parser "path/to/file.csv"
+    DEFAULT_CSV_PATH = (
+        Path(__file__).resolve().parents[2] / "tests" / "fixtures" / "valid.csv"
+    )
+    file_path = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_CSV_PATH
+
+    parsed_result = parse_csv(
+        file_path=file_path,
+    )
+    print("Parsed CSV:")
+    print(json.dumps(parsed_result, indent=2, ensure_ascii=False))
+
+    if parsed_result["status"] != "failed":
+        chunked_result = chunk_csv(parsed_result)
+        print("\nPreprocessed chunks:")
+        print(json.dumps(chunked_result, indent=2, ensure_ascii=False))
+
+# python -m backend.processing.parsers.csv_parser

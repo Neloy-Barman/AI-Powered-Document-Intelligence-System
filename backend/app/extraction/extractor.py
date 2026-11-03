@@ -10,7 +10,8 @@ from backend.app.extraction.validation.consistency import validate_consistency
 from backend.app.extraction.validation.duplicates import validate_duplicates
 
 # MODEL = "gemini-2.5-flash-lite"
-MODEL = "gemini-3.1-flash-lite"
+# MODEL = "gemini-3.1-flash-lite"
+MODEL = "gemini-3-flash-preview"
 
 SYSTEM_PROMPT = (
     "You are an invoice data extractor. "

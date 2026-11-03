@@ -1,8 +1,24 @@
 from pathlib import Path
+import warnings
+
+# EasyOCR and PyTorch emit CPU-only noise that is not actionable on this machine.
+# Keep the filters narrow so unrelated warnings still surface.
+warnings.filterwarnings(
+    "ignore",
+    message=r"torch\.quantize_per_tensor.*",
+    category=UserWarning,
+    module=r"torch\.ao\.nn\.quantized\.dynamic\.modules\.rnn",
+)
+warnings.filterwarnings(
+    "ignore",
+    message=r"'pin_memory' argument is set as true but no accelerator is found.*",
+    category=UserWarning,
+    module=r"torch\.utils\.data\.dataloader",
+)
+
 import easyocr
 
-
-reader = easyocr.Reader(["en", "bn"])
+reader = easyocr.Reader(["en", "bn"], verbose=False)
 
 
 def parse_image(file_path: str | Path) -> dict[str, str]:

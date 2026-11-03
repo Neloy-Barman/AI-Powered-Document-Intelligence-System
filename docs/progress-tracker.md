@@ -47,13 +47,30 @@ AI-Powered Document Intelligence System. Scope and deliverables: `docs/Ai Engine
 
 - `spreadsheet_parser.py`
   - `parse_spreadsheet(file_path)` using pandas, all sheets at once (`sheet_name=None`).
-  - Returns `status`, `file_name`, `sheets` -> `{sheet_name: {rows, columns, content}}`.
+  - Returns `status`, `file_name`, `sheets` -> `[{sheet_name, rows, columns, content}]`.
   - Errors: missing file, corrupt `.xlsx` (`BadZipFile`), corrupt `.xls` (`XLRDError`), parse/format errors, generic.
+
+- `chunking/spreadsheet_chunker.py`
+  - `chunk_spreadsheet(parsed_spreadsheet, chunk_size=25)` splits each sheet's rows into
+    chunks with file/sheet metadata, an inclusive `chunk_range`, and formatted
+    `text_content`.
+  - Each chunk contains metadata and `text_content`; it does not duplicate the parsed rows
+    in a `content` key.
+
+- `chunking/csv_chunker.py`
+  - `chunk_csv(parsed_csv, chunk_size=25)` splits the parsed CSV rows into chunks.
+  - Uses the same metadata and `text_content` format as the spreadsheet chunker, but has no
+    `sheet_name` because a CSV has only one dataframe.
 
 - `image_parser.py`
   - `parse_image(file_path)` delegates to `easyocr_engine.parse_image`.
   - Returns `status`, `file_name`, `content`.
   - Errors: missing file, OCR/engine failure, generic; returns `status`, `file_name`, `error_message`.
+
+- `chunking/image_chunker.py`
+  - `chunk_image(parsed_image)` wraps the parsed OCR content in a single chunk.
+  - Each chunk contains `file_name`, `file_type`, and `text_content`.
+  - Returns an empty list when the parsed content is empty.
 
 ### OCR (`backend/processing/ocr/`)
 
@@ -79,8 +96,11 @@ AI-Powered Document Intelligence System. Scope and deliverables: `docs/Ai Engine
 
 - `conftest.py` — shared fixtures: `valid_pdf_path`, `missing_pdf_path`, `corrupted_pdf_path`, `no_content_pdf_path`, `valid_csv_path`, `corrupted_csv_path`, `valid_spreadsheet_path`, `corrupted_spreadsheet_path`.
 - `unit/processing/parsers/test_pdf_parser.py` — 3 active pytest cases: success, missing file, no written content. Corrupted test commented out.
-- `unit/processing/parsers/test_csv_parser.py` — 2 pytest cases: success, corrupted file.
-- `unit/processing/parsers/test_spreadsheet_parser.py` — 2 pytest cases: success, corrupted file.
+- `unit/processing/parsers/test_csv_parser.py` — 3 pytest cases: success, corrupted file, missing file.
+- `unit/processing/chunking/test_csv_chunker.py` — 7 pytest cases: under/at/over chunk size, 100 rows, metadata, chunk text, invalid chunk size.
+- `unit/processing/parsers/test_spreadsheet_parser.py` — 3 pytest cases: success, corrupted file, missing file.
+- `unit/processing/chunking/test_spreadsheet_chunker.py` — 8 pytest cases: under/at/over chunk size, 100 rows, multiple sheets, metadata, chunk text, invalid chunk size.
+- `unit/processing/chunking/test_image_chunker.py` — 3 pytest cases: single chunk, lower-case file type, empty content.
 - `unit/processing/test_file_detector.py` — 6 pytest cases: pdf, csv, spreadsheet, image, missing file, unsupported type.
 - `unit/processing/test_router.py` — 6 pytest cases: pdf, csv, spreadsheet, image, missing file, unsupported type.
 - `unit/processing/test_pipeline.py` — 3 pytest cases: all success, with failure, empty input.
@@ -92,6 +112,7 @@ AI-Powered Document Intelligence System. Scope and deliverables: `docs/Ai Engine
 
 - `developer-instructions.md` — coding, typing, error-handling, response-order, progress-tracking rules.
 - `progress-tracker.md` — this file.
+- `semantic-search-plan.md` — separate handoff plan for spreadsheet preprocessing, embeddings, and Qdrant semantic search.
 - `folder-structure.md` — full project layout reference.
 - `frontend-development-plan.md` — frontend requirements, API contract, data shapes, build order (F1–F7), and progress log.
 - `validation-plan.md` — Task 3 validation rules, issue structure, statuses, tests, known gaps, and implementation checklist.

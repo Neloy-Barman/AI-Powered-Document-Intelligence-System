@@ -8,6 +8,7 @@ pytesseract
 pillow
 
 easyocr
+sentence-transformers
 
 pydantic
 
@@ -18,3 +19,4 @@ python-multipart
 
 redis
 rq
+qdrant-client

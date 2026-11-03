@@ -13,9 +13,11 @@ def test_parse_spreadsheet_success(valid_spreadsheet_path: Path) -> None:
 
     assert result["status"] == "success"
     assert result["file_name"] == valid_spreadsheet_path.name
-    assert set(result["sheets"]) == {"Sheet1", "Sheet2"}
-    assert result["sheets"]["Sheet1"]["rows"] == 2
-    assert result["sheets"]["Sheet1"]["columns"] == 3
+
+    sheets = result["sheets"]
+    assert [sheet["sheet_name"] for sheet in sheets] == ["Sheet1", "Sheet2"]
+    assert sheets[0]["rows"] == 2
+    assert sheets[0]["columns"] == 3
 
 
 def test_parse_spreadsheet_corrupted_file(corrupted_spreadsheet_path: Path) -> None:
