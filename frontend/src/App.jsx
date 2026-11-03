@@ -1,5 +1,5 @@
 import { useState } from "react"; // useState lets App remember which view is open
-import UploadForm from "./components/upload/UploadForm"; // The upload screen
+import UploadPage from "./pages/UploadPage"; // The upload screen
 import ProgressPage from "./pages/ProgressPage"; // The processing progress screen
 import SearchPage from "./pages/SearchPage"; // The document search screen
 import { useProcessingQueue } from "./hooks/useProcessingQueue"; // Shared queue + mock worker
@@ -11,6 +11,7 @@ function App() {
 
   // The queue lives here, so processing continues while switching views
   const { items, summary, enqueue, dismissSummary } = useProcessingQueue();
+  const isProcessing = items.some((item) => item.status === "processing");
 
   // startProcessing sends an upload section's files to the queue
   function startProcessing(files, kind) {
@@ -50,7 +51,7 @@ function App() {
 
       {/* Upload view; kept mounted so an unsubmitted selection survives */}
       <div className={`app-view ${view === "upload" ? "" : "app-view-hidden"}`}>
-        <UploadForm onProcess={startProcessing} />
+        <UploadPage onProcess={startProcessing} isProcessing={isProcessing} />
       </div>
 
       {/* Progress view; kept mounted too, so switching is instant */}

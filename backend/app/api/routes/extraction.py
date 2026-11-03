@@ -6,6 +6,7 @@ from backend.app.services.invoice_extraction_service import (
     is_processing_active,
     pop_all_pending,
     pop_next_pending,
+    remove_from_pending,
 )
 
 router = APIRouter()
@@ -22,6 +23,7 @@ def trigger_extraction(file_name: str | None = Query(None)) -> dict:
         file_path = INVOICE_UPLOAD_DIR / file_name
         if not file_path.exists():
             raise HTTPException(status_code=404, detail="Uploaded file not found.")
+        remove_from_pending(file_name)
         job_id = enqueue_invoice(file_path)
         return {"status": "queued", "jobs": [{"file_name": file_name, "job_id": job_id}]}
 

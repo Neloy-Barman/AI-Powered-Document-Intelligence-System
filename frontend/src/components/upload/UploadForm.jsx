@@ -3,7 +3,7 @@ import { uploadInvoice, triggerExtraction } from "../../lib/apiClient"; // real 
 
 // UploadForm holds the documents uploader and the invoice uploader
 // onProcess(files, kind) starts processing and moves to the progress screen
-function UploadForm({ onProcess }) {
+function UploadForm({ onProcess, isProcessing }) {
   // ---------- Documents uploader ----------
   // selectedFiles holds the chosen documents; [] is the starting value
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -77,14 +77,37 @@ function UploadForm({ onProcess }) {
     setInvoiceFile(file); // remember the accepted invoice
   }
 
-  // handleInvoiceSubmit runs when the invoice Submit button is clicked
+  // scheduleInvoiceProcessing waits until the current invoice finishes, then processes this one
+  async function scheduleInvoiceProcessing(fileName, attempt = 0) {
+    if (attempt >= 10) {
+      return; // stop retrying after a few attempts
+    }
+
+    try {
+      const result = await triggerExtraction(fileName);
+      if (result.status === "queued" && Array.isArray(result.jobs) && result.jobs.length > 0) {
+        const items = result.jobs.map((job) => ({
+          name: job.file_name,
+          job_id: job.job_id,
+        }));
+        onProcess(items, "invoice");
+        return;
+      }
+
+      if (result.status === "busy") {
+        setTimeout(() => scheduleInvoiceProcessing(fileName, attempt + 1), 1000);
+      }
+    } catch (error) {
+      setTimeout(() => scheduleInvoiceProcessing(fileName, attempt + 1), 1000);
+    }
+  }
   async function handleInvoiceSubmit(event) {
     event.preventDefault(); // Stop the browser from reloading the page
 
     // If the section is locked, the button now says "Process"
     if (invoiceLocked) {
       try {
-        const result = await triggerExtraction(); // ask backend to process pending invoices
+        const result = await triggerExtraction(invoiceFile?.name || undefined); // ask backend to process this invoice
         if (result.status === "empty") {
           window.alert(result.message); // nothing to process
           return;
@@ -121,6 +144,11 @@ function UploadForm({ onProcess }) {
       setShowInvoiceUploaded(true); // show the floating success box
       setInvoiceLocked(true); // hide the picker and change the button label to "Process"
       setTimeout(() => setShowInvoiceUploaded(false), 1000); // hide the box after 1 second
+
+      // If an invoice is already processing, schedule this one to run next.
+      if (isProcessing) {
+        scheduleInvoiceProcessing(invoiceFile.name);
+      }
     } catch (error) {
       window.alert(error.message); // show backend error (e.g. invalid type)
     }

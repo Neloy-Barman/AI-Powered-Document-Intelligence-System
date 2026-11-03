@@ -27,6 +27,11 @@ def pop_next_pending() -> str | None:
     return value.decode()
 
 
+def remove_from_pending(file_name: str) -> None:
+    # Remove a specific file from the pending queue, if present.
+    get_redis().lrem(PENDING_KEY, 0, file_name)
+
+
 def is_processing_active() -> bool:
     return bool(get_redis().get(ACTIVE_KEY))
 
