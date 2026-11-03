@@ -26,6 +26,7 @@ def search_documents(
             {
                 "file_name": result["payload"].get("file_name"),
                 "score": result["score"],
+                "text_content": result["payload"].get("text_content"),
             }
             for result in results
         ],

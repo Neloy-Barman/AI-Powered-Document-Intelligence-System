@@ -1,6 +1,7 @@
 import { useState } from "react"; // useState lets App remember which view is open
 import UploadForm from "./components/upload/UploadForm"; // The upload screen
 import ProgressPage from "./pages/ProgressPage"; // The processing progress screen
+import SearchPage from "./pages/SearchPage"; // The document search screen
 import { useProcessingQueue } from "./hooks/useProcessingQueue"; // Shared queue + mock worker
 
 // App is the root component: title, navigation, and the two views
@@ -38,6 +39,13 @@ function App() {
         >
           Progress
         </button>
+        <button
+          className={`app-nav-button ${view === "search" ? "app-nav-button-active" : ""}`}
+          type="button" // "button" prevents any form submission
+          onClick={() => setView("search")} // show the search screen
+        >
+          Search
+        </button>
       </nav>
 
       {/* Upload view; kept mounted so an unsubmitted selection survives */}
@@ -48,6 +56,11 @@ function App() {
       {/* Progress view; kept mounted too, so switching is instant */}
       <div className={`app-view ${view === "progress" ? "" : "app-view-hidden"}`}>
         <ProgressPage items={items} />
+      </div>
+
+      {/* Search view */}
+      <div className={`app-view ${view === "search" ? "" : "app-view-hidden"}`}>
+        <SearchPage />
       </div>
 
       {/* Completion popup, shown once the whole queue is done */}
