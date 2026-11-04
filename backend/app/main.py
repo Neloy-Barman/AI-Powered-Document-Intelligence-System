@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 
 from backend.app.core.config import UPLOAD_DIR
 from backend.app.db.init_db import ensure_tables
-from backend.app.api.routes import documents, extraction, home, invoices, jobs, search
+from backend.app.api.routes import documents, extraction, home, invoices, jobs, processing_history, search
 
 app = FastAPI(
     title="AI-Powered Document Intelligence System",
@@ -40,6 +40,7 @@ app.include_router(documents.router)
 app.include_router(extraction.router)
 app.include_router(jobs.router)
 app.include_router(search.router)
+app.include_router(processing_history.router)
 
 # Serve uploaded files so the frontend can download them directly.
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")

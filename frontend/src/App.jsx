@@ -2,6 +2,7 @@ import { useState } from "react"; // useState lets App remember which view is op
 import UploadPage from "./pages/UploadPage"; // The upload screen
 import ProgressPage from "./pages/ProgressPage"; // The processing progress screen
 import SearchPage from "./pages/SearchPage"; // The document search screen
+import ProcessingHistoryPage from "./pages/ProcessingHistoryPage"; // Processed document history
 import { useProcessingQueue } from "./hooks/useProcessingQueue"; // Shared queue + mock worker
 
 // App is the root component: title, navigation, and the two views
@@ -47,6 +48,13 @@ function App() {
         >
           Search
         </button>
+        <button
+          className={`app-nav-button ${view === "history" ? "app-nav-button-active" : ""}`}
+          type="button"
+          onClick={() => setView("history")}
+        >
+          History
+        </button>
       </nav>
 
       {/* Upload view; kept mounted so an unsubmitted selection survives */}
@@ -62,6 +70,11 @@ function App() {
       {/* Search view */}
       <div className={`app-view ${view === "search" ? "" : "app-view-hidden"}`}>
         <SearchPage />
+      </div>
+
+      {/* History view */}
+      <div className={`app-view ${view === "history" ? "" : "app-view-hidden"}`}>
+        <ProcessingHistoryPage />
       </div>
 
       {/* Completion popup, shown once the whole queue is done */}
