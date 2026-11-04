@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.db.models.document import Document
 from backend.app.db.models.image_document import ImageDocument
+from backend.app.db.models.invoice_document import InvoiceDocument
 from backend.app.db.models.tabular_document import TabularDocument
 
 
@@ -49,6 +50,57 @@ def create_image_document_record(
     )
     db.add(image_document)
     return image_document
+
+
+def create_invoice_document_record(
+    db: Session,
+    document_id: Any,
+    file_type: str,
+    extraction_result: dict[str, Any],
+    page_no: int | None = None,
+    qdrant_point_id: str | None = None,
+    bm25_entry_id: str | None = None,
+) -> InvoiceDocument:
+    """Create and add an invoice_documents row from an extraction result."""
+    invoice = extraction_result.get("invoice") or {}
+    validation = extraction_result.get("validation") or {}
+
+    has_missing_fields, missing_fields = validation.get("missing_fields", (False, []))
+    has_numeric_issues, numeric_issues = validation.get("numeric_issues", (False, []))
+    has_consistency_issues, consistency_issues = validation.get(
+        "consistency_issues", (False, [])
+    )
+    has_duplicate_issues, duplicate_issues = validation.get(
+        "duplicate_issues", (False, [])
+    )
+
+    invoice_document = InvoiceDocument(
+        document_id=document_id,
+        file_type=file_type,
+        page_no=page_no,
+        invoice_number=invoice.get("invoice_number"),
+        invoice_date=invoice.get("invoice_date"),
+        supplier_name=invoice.get("supplier_name"),
+        customer_name=invoice.get("customer_name"),
+        subtotal=invoice.get("subtotal"),
+        tax=invoice.get("tax"),
+        total=invoice.get("total"),
+        currency=invoice.get("currency"),
+        line_items=invoice.get("line_items"),
+        has_missing_fields=bool(has_missing_fields),
+        has_numeric_issues=bool(has_numeric_issues),
+        has_consistency_issues=bool(has_consistency_issues),
+        has_duplicate_issues=bool(has_duplicate_issues),
+        missing_fields=missing_fields,
+        numeric_issues=numeric_issues,
+        consistency_issues=consistency_issues,
+        duplicate_issues=duplicate_issues,
+        raw_extraction=extraction_result,
+        qdrant_point_id=qdrant_point_id,
+        bm25_entry_id=uuid.UUID(bm25_entry_id) if bm25_entry_id else None,
+    )
+    db.add(invoice_document)
+    return invoice_document
 
 
 def create_tabular_chunk_records(

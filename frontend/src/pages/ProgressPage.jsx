@@ -28,26 +28,29 @@ function ProgressPage({ items }) {
         <ul className="progress-list">
           {items.map((item) => (
             <li className="progress-item" key={item.id}>
-              {/* File name */}
-              <span className="progress-item-name">{item.file_name}</span>
-              {/* Current status; its label comes from STATUS_LABELS */}
-              <span
-                className={`progress-item-status progress-item-status-${item.status}`}
-              >
-                {STATUS_LABELS[item.status]}
-              </span>
-              {/* Show a "View result" button only for completed items with a result */}
-              {(item.status === "completed" || item.status === "failed") && item.result && (
-                <button
-                  className="progress-view-result"
-                  type="button"
-                  onClick={() =>
-                    setExpandedId(expandedId === item.id ? null : item.id)
-                  } // toggle the inline result view
+              {/* Summary row holds the file name, status, and result toggle */}
+              <div className="progress-item-summary">
+                {/* File name */}
+                <span className="progress-item-name">{item.file_name}</span>
+                {/* Current status; its label comes from STATUS_LABELS */}
+                <span
+                  className={`progress-item-status progress-item-status-${item.status}`}
                 >
-                  {expandedId === item.id ? "Hide result" : "View result"}
-                </button>
-              )}
+                  {STATUS_LABELS[item.status]}
+                </span>
+                {/* Show a "View result" button only for completed items with a result */}
+                {(item.status === "completed" || item.status === "failed") && item.result && (
+                  <button
+                    className="progress-view-result"
+                    type="button"
+                    onClick={() =>
+                      setExpandedId(expandedId === item.id ? null : item.id)
+                    } // toggle the inline result view
+                  >
+                    {expandedId === item.id ? "Hide result" : "View result"}
+                  </button>
+                )}
+              </div>
               {/* Inline result view when expanded */}
               {expandedId === item.id && item.result && (
                 <pre className="progress-result">

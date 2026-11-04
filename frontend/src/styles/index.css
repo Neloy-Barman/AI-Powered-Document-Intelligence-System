@@ -103,13 +103,23 @@ body {
   margin: 0;
   padding: 0;
   list-style: none;
+  width: 100%;
+  max-width: 720px;
 }
 
 .progress-item {
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  min-width: 280px;
+}
+
+.progress-item-summary {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-width: 280px;
 }
 
 .progress-item-name {}
@@ -118,6 +128,20 @@ body {
 .progress-item-status-processing {}
 .progress-item-status-completed {}
 .progress-item-status-failed {}
+
+.progress-result {
+  max-height: 240px;
+  margin: 0;
+  padding: 8px;
+  overflow: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
 
 /* Final summary popup */
 .processing-summary {}

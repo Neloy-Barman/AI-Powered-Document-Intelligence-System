@@ -1,8 +1,15 @@
 [
   {
+    "file_name": "Max_a_A_clean,_realistic_s.png",
+    "file_type": ".png",
+    "page_no": null,
+    "text_content": "invoice_number: INV-2026-04817, invoice_date: October 28, 2026, supplier_name: Brightwave Technologies Ltd., customer_name: Harbor & Pine Consulting LLC, subtotal: 1020.00, tax: 81.60, total: 1101.60, currency: USD\ndescription: Cloud Hosting - Standard Plan, quantity: 3.0, unit_price: 120.00, amount: 360.00\ndescription: Technical Support Hours, quantity: 10.0, unit_price: 45.00, amount: 450.00\ndescription: SSL Certificate (1 year), quantity: 2.0, unit_price: 59.50, amount: 119.00\ndescription: Data Backup Storage 500GB, quantity: 4.0, unit_price: 22.75, amount: 91.00",
+    "id": "c75798a2-f461-44d4-ade8-e9ed8aed01ba"
+  },
+  {
     "file_name": "881510086_1437680941077385_7124764482789660276_n.jpg",
     "file_type": ".jpg",
     "text_content": "|IN No Nut November",
-    "id": "cc2ef292-15c4-4374-b6d2-5788ac72b902"
+    "id": "d7624ac7-88c4-4770-814c-bcbb1fad988e"
   }
 ]

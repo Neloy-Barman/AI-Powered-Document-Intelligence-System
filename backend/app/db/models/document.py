@@ -44,3 +44,9 @@ class Document(Base):
         back_populates="document",
         cascade="all, delete-orphan",
     )
+    invoice_document = relationship(
+        "InvoiceDocument",
+        back_populates="document",
+        uselist=False,
+        cascade="all, delete-orphan",
+    )

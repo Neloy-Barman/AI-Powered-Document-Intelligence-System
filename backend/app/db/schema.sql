@@ -42,4 +42,33 @@ CREATE TABLE tabular_documents (
 CREATE INDEX idx_documents_status ON documents(status);
 CREATE INDEX idx_documents_file_type ON documents(file_type);
 CREATE INDEX idx_image_documents_document_id ON image_documents(document_id);
-CREATE INDEX idx_tabular_documents_document_id ON tabular_documents(document_id);
+CREATE TABLE invoice_documents (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    document_id UUID NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+    file_type VARCHAR(20) NOT NULL,
+    page_no INT,
+    invoice_number VARCHAR(100),
+    invoice_date VARCHAR(50),
+    supplier_name VARCHAR(255),
+    customer_name VARCHAR(255),
+    subtotal NUMERIC(12, 2),
+    tax NUMERIC(12, 2),
+    total NUMERIC(12, 2),
+    currency VARCHAR(10),
+    line_items JSONB,
+    has_missing_fields BOOLEAN NOT NULL DEFAULT FALSE,
+    has_numeric_issues BOOLEAN NOT NULL DEFAULT FALSE,
+    has_consistency_issues BOOLEAN NOT NULL DEFAULT FALSE,
+    has_duplicate_issues BOOLEAN NOT NULL DEFAULT FALSE,
+    missing_fields JSONB,
+    numeric_issues JSONB,
+    consistency_issues JSONB,
+    duplicate_issues JSONB,
+    raw_extraction JSONB,
+    qdrant_point_id VARCHAR(100),
+    bm25_entry_id UUID,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_invoice_documents_document_id ON invoice_documents(document_id);
