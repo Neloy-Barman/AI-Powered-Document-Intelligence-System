@@ -5,6 +5,7 @@ from sqlalchemy import (
     BigInteger,
     DateTime,
     String,
+    Text,
     Uuid,
     func,
 )
@@ -24,6 +25,7 @@ class Document(Base):
     status: Mapped[str] = mapped_column(String(30), nullable=False, default="uploaded")
     storage_path: Mapped[str] = mapped_column(String(500), nullable=False)
     file_size_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    reason: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, default=func.now()
     )

@@ -7,6 +7,7 @@ CREATE TABLE documents (
     status VARCHAR(30) NOT NULL DEFAULT 'uploaded',
     storage_path VARCHAR(500) NOT NULL,
     file_size_bytes BIGINT NOT NULL,
+    reason TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );

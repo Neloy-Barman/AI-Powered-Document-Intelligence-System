@@ -37,7 +37,7 @@ function ProgressPage({ items }) {
                 {STATUS_LABELS[item.status]}
               </span>
               {/* Show a "View result" button only for completed items with a result */}
-              {item.status === "completed" && item.result && (
+              {(item.status === "completed" || item.status === "failed") && item.result && (
                 <button
                   className="progress-view-result"
                   type="button"

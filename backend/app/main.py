@@ -21,6 +21,7 @@ app = FastAPI(
 def initialize_database() -> None:
     ensure_tables()
 
+
 # Allow the Vite dev server (frontend) to call the API.
 app.add_middleware(
     CORSMiddleware,

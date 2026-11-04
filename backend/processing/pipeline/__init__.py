@@ -2,6 +2,9 @@ from pathlib import Path
 
 from backend.processing.router import route_file
 
+from backend.processing.pipeline.csv_pipeline import process_csv
+from backend.processing.pipeline.document_pipeline import process_document
+
 
 def process_files(file_paths: list[str | Path]) -> dict[str, object]:
     results: list[dict[str, object]] = []
@@ -25,3 +28,6 @@ def process_files(file_paths: list[str | Path]) -> dict[str, object]:
         "failed": failed,
         "results": results,
     }
+
+
+__all__ = ["process_csv", "process_document", "process_files"]

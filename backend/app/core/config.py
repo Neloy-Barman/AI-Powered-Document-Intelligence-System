@@ -1,8 +1,14 @@
 from pathlib import Path
 import os
 
+from dotenv import load_dotenv
+
 # Base directory points to the `backend/` folder.
 BASE_DIR = Path(__file__).resolve().parents[2]
+
+# Load the project .env so it is the single source of truth for local config.
+# override=True ensures a stale DATABASE_URL set in the shell cannot shadow it.
+load_dotenv(BASE_DIR.parent / ".env", override=True)
 
 # Where uploaded files are stored on disk.
 UPLOAD_DIR = BASE_DIR / "uploads"
@@ -28,7 +34,9 @@ QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY") or None
 
 # Qdrant collection and search settings
-QDRANT_COLLECTION_NAME = "document-intelligence-system"
+QDRANT_COLLECTION_NAME = os.getenv(
+    "QDRANT_COLLECTION_NAME", "ai_powered_document_intelligence_system"
+)
 QDRANT_SEARCH_LIMIT = 3
 
 # PostgreSQL database

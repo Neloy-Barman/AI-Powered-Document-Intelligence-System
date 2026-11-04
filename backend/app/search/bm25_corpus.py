@@ -1,5 +1,6 @@
 import json
 import uuid
+from uuid import uuid4
 from pathlib import Path
 from typing import Any
 
@@ -43,8 +44,8 @@ def append_chunks(
     ]
 
     for chunk in chunks:
-        chunk.setdefault("id", chunk.get("bm25_entry_id") or str(uuid4()))
-        chunk.setdefault("bm25_entry_id", chunk["id"])
+        chunk.setdefault("id", str(uuid4()))
+        chunk.pop("bm25_entry_id", None)
 
     corpus.extend(chunks)
 
